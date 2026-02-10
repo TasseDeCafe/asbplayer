@@ -1,6 +1,7 @@
 import os
 import tempfile
 import glob
+import base64
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -28,6 +29,10 @@ API_KEY = os.environ.get("TRANSCRIPT_API_KEY", "")
 
 # OpenAI API key for Whisper
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+
+# YouTube cookies for yt-dlp authentication (Netscape cookie format, base64-encoded)
+# Export from browser using "Get cookies.txt LOCALLY" extension, then base64-encode
+YOUTUBE_COOKIES_B64 = os.environ.get("YOUTUBE_COOKIES_B64", "")
 
 # Max file size for OpenAI Whisper API (25MB, use 24MB to be safe)
 MAX_CHUNK_SIZE_MB = 24
@@ -162,6 +167,13 @@ async def get_transcript(
                     'no_warnings': True,
                     'extract_flat': False,
                 }
+
+                # Write cookies file if provided
+                if YOUTUBE_COOKIES_B64:
+                    cookies_path = os.path.join(tmpdir, "cookies.txt")
+                    with open(cookies_path, "wb") as f:
+                        f.write(base64.b64decode(YOUTUBE_COOKIES_B64))
+                    ydl_opts['cookiefile'] = cookies_path
 
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     ydl.download([request.url])
