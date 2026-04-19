@@ -21,7 +21,9 @@
       "WebFetch(domain:docs.gladia.io)",
       "WebFetch(domain:www.youtube-transcript.io)",
       "WebFetch(domain:railpack.com)",
-      "WebFetch(domain:pytubefix.readthedocs.io)"
+      "WebFetch(domain:pytubefix.readthedocs.io)",
+      "Bash(yt-dlp --version)",
+      "Bash(yt-dlp -F \"https://www.youtube.com/watch?v=p0m5TGV-Hw8\")"
     ]
   }
 }

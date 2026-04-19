@@ -161,7 +161,7 @@ async def get_transcript(
             try:
                 audio_path = os.path.join(tmpdir, "audio.m4a")
                 ydl_opts = {
-                    'format': 'bestaudio[ext=m4a]/bestaudio/best',
+                    'format': 'bestaudio[ext=m4a]/bestaudio/bestvideo*+bestaudio/best',
                     'outtmpl': os.path.join(tmpdir, 'audio.%(ext)s'),
                     'quiet': True,
                     'no_warnings': True,

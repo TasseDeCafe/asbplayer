@@ -144,7 +144,7 @@ Generate high-quality subtitles for YouTube videos using OpenAI Whisper API via 
 ```
 [Extension] → [Railway Backend] → [OpenAI Whisper API]
                     ↓
-              [pytubefix]
+               [yt-dlp]
            (download audio)
 ```
 
@@ -153,7 +153,7 @@ Generate high-quality subtitles for YouTube videos using OpenAI Whisper API via 
 ### 1. Custom Transcript Server (Railway)
 - **Location**: `transcript-server/` directory
 - FastAPI backend deployed on Railway
-- Downloads YouTube audio using `pytubefix` (pure Python, no JS runtime needed)
+- Downloads YouTube audio using `yt-dlp` (with optional cookie-based authentication)
 - Transcribes using OpenAI Whisper API (`whisper-1` model)
 - Handles long videos by splitting audio into 20-minute chunks
 - Returns SRT format subtitles
@@ -228,7 +228,20 @@ interface TranscriptSettings {
 ```bash
 OPENAI_API_KEY=sk-...          # Required: OpenAI API key for Whisper
 TRANSCRIPT_API_KEY=...          # Optional: API key to protect the endpoint
+YOUTUBE_COOKIES_B64=...         # Optional: Base64-encoded YouTube cookies for yt-dlp auth
 ```
+
+### YouTube Cookie Authentication
+
+YouTube may block yt-dlp requests with a "Sign in to confirm you're not a bot" error. To fix this, provide your YouTube session cookies:
+
+1. Install a browser extension like "Get cookies.txt LOCALLY"
+2. Go to youtube.com while logged into your Google account
+3. Export cookies for `.youtube.com` (Netscape format `.txt` file)
+4. Base64-encode the file: `base64 < cookies.txt`
+5. Set the `YOUTUBE_COOKIES_B64` environment variable on Railway to the base64 output
+
+**Cookies expire** after a few weeks to months. When the bot error returns, repeat the export process.
 
 ## Data Model (Cache)
 
@@ -247,7 +260,7 @@ fastapi>=0.109.0
 uvicorn>=0.27.0
 openai>=1.12.0
 pydantic>=2.0.0
-pytubefix>=8.0.0
+yt-dlp>=2024.12.0
 pydub>=0.25.0
 static-ffmpeg>=2.5
 ```
